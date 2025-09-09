@@ -12,12 +12,15 @@
     "dev": "nodemon --watch src --exec tsx src/index.ts"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/winston": "^2.4.4",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
