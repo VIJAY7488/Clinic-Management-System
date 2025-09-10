@@ -22,12 +22,10 @@ const PatientSchema: Schema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
       trim: true,
     },
     reason: {
       type: String,
-      required: true,
       trim: true,
     },
     priority: {
