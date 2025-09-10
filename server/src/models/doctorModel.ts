@@ -8,10 +8,14 @@ interface Availability {
 
 export interface DoctorProps {
   name: string;
+  currentPatients: number;
+  email: string;
+  phone: string;
   specialization: string;
   gender: "Male" | "Female" | "Other";
   location: string;
   availability: Availability[];
+  notes?: string;
   isActive: boolean;
 }
 
@@ -36,6 +40,30 @@ const doctorSchema = new Schema<DoctorProps>(
       required: true,
       trim: true,
     },
+    currentPatients: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    email: {
+      type: String,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],    
+    },
+    phone: {
+      type: String,
+      unique: true,
+      trim: true,
+      match: [
+        /^\+?[1-9]\d{1,14}$/,
+        "Please fill a valid phone number",
+      ], 
+    },
     gender: {
       type: String,
       enum: ["Male", "Female", "Other"],
@@ -49,6 +77,10 @@ const doctorSchema = new Schema<DoctorProps>(
     availability: {
       type: [AvailabilitySchema],
       default: [],
+    },
+    notes: {
+      type: String,
+      trim: true,
     },
     isActive: {
       type: Boolean,
