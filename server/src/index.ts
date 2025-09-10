@@ -5,6 +5,7 @@ import connectDB from './config/dbConnection';
 import configureCors from './config/corsConfig';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes';
+import doctorRoutes from './routes/doctorRoutes';
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/doctors', doctorRoutes);
 
 
 
