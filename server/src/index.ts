@@ -4,6 +4,7 @@ import logger from './utils/logger';
 import connectDB from './config/dbConnection';
 import configureCors from './config/corsConfig';
 import cookieParser from 'cookie-parser';
+import authRoutes from './routes/authRoutes';
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
+app.use('/api/auth', authRoutes);
 
 
 
@@ -31,5 +33,14 @@ connectDB()
   })
   .catch((err: any) => {
     logger.error("Failed to connect to DB", err);
+});
+
+import bcrypt from "bcryptjs";
+
+const plainPassword = "password";  // the password you want
+const saltRounds = 10;
+
+bcrypt.hash(plainPassword, saltRounds).then(hash => {
+  console.log("Hashed password:", hash);
 });
 
