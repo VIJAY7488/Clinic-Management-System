@@ -14,12 +14,12 @@ export const loginStaff = wrapAsyncFunction(async(req: Request, res: Response) =
     
     const {username, password} = req.body;
 
-    logger.info('Request Body', { body: req.body });
 
     const staff = await Staff.findOne({ username });
-    logger.info('Staff fetched from DB ', { staff });
-    logger.error("Invalid username or password");
-    if (!staff) return res.status(401).json({ message: "Invalid credentials" });
+    if (!staff){
+        logger.error("Invalid username or password");
+        return res.status(401).json({ message: "Invalid credentials" });
+    } 
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, staff.password);

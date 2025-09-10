@@ -35,12 +35,4 @@ connectDB()
     logger.error("Failed to connect to DB", err);
 });
 
-import bcrypt from "bcryptjs";
-
-const plainPassword = "password";  // the password you want
-const saltRounds = 10;
-
-bcrypt.hash(plainPassword, saltRounds).then(hash => {
-  console.log("Hashed password:", hash);
-});
 
