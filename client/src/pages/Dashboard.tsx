@@ -29,7 +29,7 @@ export function Dashboard() {
 
   const logout = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}auth/logout`, {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include', 
       });
