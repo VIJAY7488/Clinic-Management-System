@@ -7,7 +7,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+
 
   const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+  
 
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -44,29 +44,19 @@ const LoginPage: React.FC = () => {
         }
         
         console.log('Login successful:', data);
-      } else {
-        // Handle error response
-        setError(data.message || 'Login failed. Please check your credentials.');
-      }
+      } 
     } catch (err) {
       // Handle network or other errors
       console.error('Login error:', err);
-      setError('Network error. Please try again.');
       
       // Fallback to demo credentials for testing
       if (username === 'admin' && password === 'password') {
         setIsAuthenticated(true);
-        setError('');
+        
       }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUsername('');
-    setPassword('');
   };
 
   // Success screen after login
