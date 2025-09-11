@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginStaff = void 0;
+exports.logoutStaff = exports.loginStaff = void 0;
 const logger_1 = __importDefault(require("../utils/logger"));
 const tryCatchWrapper_1 = __importDefault(require("../utils/tryCatchWrapper"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -41,5 +41,19 @@ exports.loginStaff = (0, tryCatchWrapper_1.default)(async (req, res) => {
             username: staff.username,
             token: token
         },
+    });
+});
+exports.logoutStaff = (0, tryCatchWrapper_1.default)(async (req, res) => {
+    logger_1.default.info("Logout endpoint hit");
+    // Clear the cookie
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    logger_1.default.info("Logout successful");
+    res.status(200).json({
+        success: true,
+        message: "Logout successful",
     });
 });
