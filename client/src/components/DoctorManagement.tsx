@@ -1,11 +1,17 @@
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -14,104 +20,120 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus, Search, Edit, Trash2, MapPin, Clock, User } from "lucide-react"
-import axios from "axios"
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Search, Edit, Trash2, MapPin, Clock, User } from "lucide-react";
+import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Doctor {
-  _id: string
-  name: string
-  specialization: string 
-  gender: "Male" | "Female" | "Other" 
-  location: string
-  phone: string
-  email: string
+  _id: string;
+  name: string;
+  specialization: string;
+  gender: "Male" | "Female" | "Other";
+  location: string;
+  phone: string;
+  email: string;
   availability: Array<{
-    day: string
-    startTime: string
-    endTime: string
-  }>
-  status: boolean 
-  currentPatients: number
-  notes?: string 
+    day: string;
+    startTime: string;
+    endTime: string;
+  }>;
+  status: boolean;
+  currentPatients: number;
+  notes?: string;
 }
 
-
 export function DoctorManagement() {
-  const [doctors, setDoctors] = useState<Doctor[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterSpecialty, setFilterSpecialty] = useState("all")
-  const [filterLocation, setFilterLocation] = useState("all")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null)
-  const [loading, setLoading] = useState(true) 
-  const [error, setError] = useState<string | null>(null) 
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterSpecialty, setFilterSpecialty] = useState("all");
+  const [filterLocation, setFilterLocation] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetching doctors from backend
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
         const res = await axios.get(`${API_BASE_URL}/doctors`);
-        setDoctors(res.data.data || res.data); 
+        setDoctors(res.data.data || res.data);
       } catch (error) {
         console.error("Error fetching doctors", error);
-        setError("Failed to fetch doctors. Please try again.")
+        setError("Failed to fetch doctors. Please try again.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
     fetchDoctors();
   }, []);
 
   // Adding a new doctor
   const handleAddDoctor = async (doctorData: Omit<Doctor, "_id">) => {
     try {
-      setError(null)
-      
-      const res = await axios.post(`${API_BASE_URL}/doctors`, doctorData)
-      const newDoctor = res.data.data || res.data
-      setDoctors(prev => [...prev, newDoctor])
-      setIsAddDialogOpen(false)
+      setError(null);
+
+      const res = await axios.post(`${API_BASE_URL}/doctors`, doctorData);
+      const newDoctor = res.data.data || res.data;
+      setDoctors((prev) => [...prev, newDoctor]);
+      setIsAddDialogOpen(false);
     } catch (err: any) {
-      console.error("Error adding doctor", err)
-      setError(err.response?.data?.message || "Failed to add doctor")
+      console.error("Error adding doctor", err);
+      setError(err.response?.data?.message || "Failed to add doctor");
     }
-  }
+  };
 
   // Updating an existing doctor
-  const handleEditDoctor = async (doctorData: Doctor) => {
+  // Updating an existing doctor
+  const handleEditDoctor = async (doctorData: Doctor | Omit<Doctor, "_id">) => {
     try {
-      setError(null)
-      const res = await axios.put(`${API_BASE_URL}/doctors/${doctorData._id}`, doctorData)
-      const updatedDoctor = res.data.data || res.data
-      setDoctors(prev => prev.map((d) => (d._id === doctorData._id ? updatedDoctor : d)))
-      setEditingDoctor(null)
+      setError(null);
+
+      if (!("_id" in doctorData)) {
+        throw new Error("Cannot update doctor without an _id");
+      }
+
+      const res = await axios.put(
+        `${API_BASE_URL}/doctors/${doctorData._id}`,
+        doctorData
+      );
+      const updatedDoctor = res.data.data || res.data;
+
+      setDoctors((prev) =>
+        prev.map((d) => (d._id === doctorData._id ? updatedDoctor : d))
+      );
+      setEditingDoctor(null);
     } catch (error: any) {
-      console.error("Error updating doctor", error)
-      setError(error.response?.data?.message || "Failed to update doctor")
+      console.error("Error updating doctor", error);
+      setError(error.response?.data?.message || "Failed to update doctor");
     }
-  }
+  };
 
   // Deleting a doctor
   const handleDeleteDoctor = async (doctorId: string) => {
     try {
-      setError(null)
-      await axios.delete(`${API_BASE_URL}/doctors/${doctorId}`)
-      setDoctors(prev => prev.filter((d) => d._id !== doctorId))
+      setError(null);
+      await axios.delete(`${API_BASE_URL}/doctors/${doctorId}`);
+      setDoctors((prev) => prev.filter((d) => d._id !== doctorId));
     } catch (error: any) {
-      console.error("Error deleting doctor", error)
-      setError(error.response?.data?.message || "Failed to delete doctor")
+      console.error("Error deleting doctor", error);
+      setError(error.response?.data?.message || "Failed to delete doctor");
     }
-  }
+  };
 
-  
   const specialties = Array.from(new Set(doctors.map((d) => d.specialization))); // Changed from specialty
   const locations = Array.from(new Set(doctors.map((d) => d.location)));
 
@@ -119,33 +141,36 @@ export function DoctorManagement() {
   const filteredDoctors = doctors.filter((doctor) => {
     const matchesSearch =
       doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase()) 
-    const matchesSpecialty = filterSpecialty === "all" || doctor.specialization === filterSpecialty
-    const matchesLocation = filterLocation === "all" || doctor.location === filterLocation
-    
-    const matchesStatus = filterStatus === "all" || 
+      doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSpecialty =
+      filterSpecialty === "all" || doctor.specialization === filterSpecialty;
+    const matchesLocation =
+      filterLocation === "all" || doctor.location === filterLocation;
+
+    const matchesStatus =
+      filterStatus === "all" ||
       (filterStatus === "available" && doctor.status === true) ||
-      (filterStatus === "unavailable" && doctor.status === false)
+      (filterStatus === "unavailable" && doctor.status === false);
 
-    return matchesSearch && matchesSpecialty && matchesLocation && matchesStatus
-  })
+    return (
+      matchesSearch && matchesSpecialty && matchesLocation && matchesStatus
+    );
+  });
 
-  
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-lg">Loading doctors...</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
-      
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
           {error}
-          <button 
+          <button
             onClick={() => setError(null)}
             className="ml-2 text-red-500 hover:text-red-700"
           >
@@ -157,7 +182,9 @@ export function DoctorManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Doctor Management</h2>
-          <p className="text-muted-foreground">Manage doctor profiles and availability</p>
+          <p className="text-muted-foreground">
+            Manage doctor profiles and availability
+          </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -167,7 +194,10 @@ export function DoctorManagement() {
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DoctorForm onSubmit={handleAddDoctor} onCancel={() => setIsAddDialogOpen(false)} />
+            <DoctorForm
+              onSubmit={handleAddDoctor}
+              onCancel={() => setIsAddDialogOpen(false)}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -214,7 +244,7 @@ export function DoctorManagement() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
                 <SelectValue placeholder="All Status" />
@@ -244,7 +274,7 @@ export function DoctorManagement() {
                     <CardTitle className="text-lg">{doctor.name}</CardTitle>
                     <CardDescription>{doctor.specialization}</CardDescription>
                   </div>
-                  
+
                   <Badge variant={doctor.status ? "default" : "secondary"}>
                     {doctor.status ? "Available" : "Unavailable"}
                   </Badge>
@@ -267,12 +297,22 @@ export function DoctorManagement() {
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                  <div className="text-sm text-muted-foreground">{doctor.phone}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {doctor.phone}
+                  </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" onClick={() => setEditingDoctor(doctor)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setEditingDoctor(doctor)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDeleteDoctor(doctor._id)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteDoctor(doctor._id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -285,36 +325,46 @@ export function DoctorManagement() {
 
       {/* Edit Dialog */}
       {editingDoctor && (
-        <Dialog open={!!editingDoctor} onOpenChange={(open) => !open && setEditingDoctor(null)}>
+        <Dialog
+          open={!!editingDoctor}
+          onOpenChange={(open) => !open && setEditingDoctor(null)}
+        >
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DoctorForm doctor={editingDoctor} onSubmit={handleEditDoctor} onCancel={() => setEditingDoctor(null)} />
+            <DoctorForm
+              doctor={editingDoctor}
+              onSubmit={handleEditDoctor}
+              onCancel={() => setEditingDoctor(null)}
+            />
           </DialogContent>
         </Dialog>
       )}
     </div>
-  )
+  );
 }
 
 interface DoctorFormProps {
-  doctor?: Doctor
-  onSubmit: (doctor: Doctor | Omit<Doctor, "_id">) => void | Promise<void>
-  onCancel: () => void
+  doctor?: Doctor;
+  onSubmit: (doctor: Doctor) =>
+    | void
+    | Promise<void> // when editing
+    | ((doctor: Omit<Doctor, "_id">) => void | Promise<void>); // when adding
+  onCancel: () => void;
 }
 
 // Form component for adding/editing a doctor
 function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
   const [formData, setFormData] = useState<Omit<Doctor, "_id">>({
     name: doctor?.name || "",
-    specialization: doctor?.specialization || "", 
-    gender: doctor?.gender || "Female", 
+    specialization: doctor?.specialization || "",
+    gender: doctor?.gender || "Female",
     location: doctor?.location || "",
     phone: doctor?.phone || "",
     email: doctor?.email || "",
     availability: doctor?.availability || [],
-    status: doctor?.status ?? true, 
+    status: doctor?.status ?? true,
     currentPatients: doctor?.currentPatients || 0,
     notes: doctor?.notes || "",
-  })
+  });
 
   const [availabilityForm, setAvailabilityForm] = useState({
     monday: { startTime: "09:00", endTime: "17:00", available: true },
@@ -324,51 +374,59 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
     friday: { startTime: "09:00", endTime: "17:00", available: true },
     saturday: { startTime: "09:00", endTime: "12:00", available: false },
     sunday: { startTime: "09:00", endTime: "12:00", available: false },
-  })
+  });
 
   // Populate availability form if editing an existing doctor
   useEffect(() => {
     if (doctor?.availability) {
-      const newAvailabilityForm = { ...availabilityForm }
-      doctor.availability.forEach(slot => {
-        const day = slot.day.toLowerCase() as keyof typeof availabilityForm
+      const newAvailabilityForm = { ...availabilityForm };
+      doctor.availability.forEach((slot) => {
+        const day = slot.day.toLowerCase() as keyof typeof availabilityForm;
         if (newAvailabilityForm[day]) {
           newAvailabilityForm[day] = {
             startTime: slot.startTime,
             endTime: slot.endTime,
-            available: true
-          }
+            available: true,
+          };
         }
-      })
-      setAvailabilityForm(newAvailabilityForm)
+      });
+      setAvailabilityForm(newAvailabilityForm);
     }
-  }, [doctor])
+  }, [doctor]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Construct availability array from form state
     const availability = Object.entries(availabilityForm)
       .filter(([_, slot]) => slot.available)
       .map(([day, slot]) => ({
-        day: day.charAt(0).toUpperCase() + day.slice(1), 
+        day: day.charAt(0).toUpperCase() + day.slice(1),
         startTime: slot.startTime,
-        endTime: slot.endTime
-      }))
+        endTime: slot.endTime,
+      }));
 
     const submitData = {
       ...formData,
-      availability
-    }
+      availability,
+    };
 
     if (doctor) {
-      onSubmit({ ...submitData, _id: doctor._id })
+      onSubmit({ ...submitData, _id: doctor._id });
     } else {
-      onSubmit(submitData)
+      onSubmit(submitData);
     }
-  }
+  };
 
-  const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const
+  const days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ] as const;
 
   return (
     <>
@@ -388,7 +446,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               required
             />
           </div>
@@ -397,7 +457,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
             <Input
               id="specialization"
               value={formData.specialization}
-              onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, specialization: e.target.value })
+              }
               required
             />
           </div>
@@ -405,7 +467,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
             <Label htmlFor="gender">Gender</Label>
             <Select
               value={formData.gender}
-              onValueChange={(value: "Male" | "Female" | "Other") => setFormData({ ...formData, gender: value })}
+              onValueChange={(value: "Male" | "Female" | "Other") =>
+                setFormData({ ...formData, gender: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -422,7 +486,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
             <Input
               id="location"
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
               required
             />
           </div>
@@ -431,7 +497,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
             <Input
               id="phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
             />
           </div>
           <div className="space-y-2">
@@ -440,17 +508,20 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
           </div>
         </div>
 
-        
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
           <Select
             value={formData.status ? "available" : "unavailable"}
-            onValueChange={(value) => setFormData({ ...formData, status: value === "available" })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, status: value === "available" })
+            }
           >
             <SelectTrigger>
               <SelectValue />
@@ -475,7 +546,10 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
                     onChange={(e) =>
                       setAvailabilityForm({
                         ...availabilityForm,
-                        [day]: { ...availabilityForm[day], available: e.target.checked },
+                        [day]: {
+                          ...availabilityForm[day],
+                          available: e.target.checked,
+                        },
                       })
                     }
                     className="rounded"
@@ -490,7 +564,10 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
                       onChange={(e) =>
                         setAvailabilityForm({
                           ...availabilityForm,
-                          [day]: { ...availabilityForm[day], startTime: e.target.value },
+                          [day]: {
+                            ...availabilityForm[day],
+                            startTime: e.target.value,
+                          },
                         })
                       }
                       className="w-32"
@@ -502,7 +579,10 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
                       onChange={(e) =>
                         setAvailabilityForm({
                           ...availabilityForm,
-                          [day]: { ...availabilityForm[day], endTime: e.target.value },
+                          [day]: {
+                            ...availabilityForm[day],
+                            endTime: e.target.value,
+                          },
                         })
                       }
                       className="w-32"
@@ -519,7 +599,9 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
           <Textarea
             id="notes"
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, notes: e.target.value })
+            }
             placeholder="Additional notes about the doctor..."
             rows={3}
           />
@@ -529,9 +611,11 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">{doctor ? "Update Doctor" : "Add Doctor"}</Button>
+          <Button type="submit">
+            {doctor ? "Update Doctor" : "Add Doctor"}
+          </Button>
         </DialogFooter>
       </form>
     </>
-  )
+  );
 }
