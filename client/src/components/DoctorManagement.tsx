@@ -297,7 +297,7 @@ export function DoctorManagement() {
 
 interface DoctorFormProps {
   doctor?: Doctor
-  onSubmit: (doctor: Doctor | Omit<Doctor, "_id">) => void
+  onSubmit: (doctor: Doctor | Omit<Doctor, "_id">) => void | Promise<void>
   onCancel: () => void
 }
 

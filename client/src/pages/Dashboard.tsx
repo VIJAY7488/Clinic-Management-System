@@ -11,8 +11,6 @@ import {
   Clock,
   LogOut,
   Stethoscope,
-  Bell,
-  Settings,
   Activity,
   TrendingUp,
 } from "lucide-react"
