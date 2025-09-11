@@ -1,7 +1,7 @@
 import cors from 'cors';
 
 const configureCors = () => {
-  const allowOrigins = ["http://localhost:5173"];
+  const allowOrigins = ["https://clinic-management-system-lxip.vercel.app"];
 
   return cors({
     origin(origin, callback) {
