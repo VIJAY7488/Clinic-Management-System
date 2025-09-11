@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Plus, CalendarIcon, Clock, User, Phone, Edit, Trash2, Search, RefreshCw } from "lucide-react"
-import { format, addDays, isSameDay, parseISO } from "date-fns"
+import { format, isSameDay, parseISO } from "date-fns"
 import axios from "axios"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
@@ -165,35 +165,50 @@ export function AppointmentManagement() {
   })
 
   const generateTimeSlots = (doctor: Doctor, date: Date) => {
-    const dayName = format(date, "EEEE").toLowerCase()
-    const availability = doctor.availability[dayName]
+  
+    if (!doctor.availability || doctor.availability.length === 0) {
+      return [];
+    }
 
-    if (!availability?.available) return []
+    const dayName = format(date, "EEEE"); 
+  
+  
+    const availability = doctor.availability.find(
+      (slot) => slot.day.toLowerCase() === dayName.toLowerCase()
+    );
 
-    const slots = []
-    const startTime = parseISO(`2000-01-01T${availability.start}:00`)
-    const endTime = parseISO(`2000-01-01T${availability.end}:00`)
+  
+    if (!availability) return [];
 
-    let currentTime = startTime
+    const slots = [];
+  
+  
+    const startTime = parseISO(`2000-01-01T${availability.startTime}:00`);
+    const endTime = parseISO(`2000-01-01T${availability.endTime}:00`);
+  
+    let currentTime = startTime;
     while (currentTime < endTime) {
-      const timeString = format(currentTime, "HH:mm")
+      const timeString = format(currentTime, "HH:mm");
+      
+      // Check if this slot is already booked
       const isBooked = appointments.some(
         (apt) =>
           apt.doctor === doctor._id &&
           isSameDay(new Date(apt.date), date) &&
           apt.time === timeString &&
-          apt.status !== "cancelled",
-      )
-
+          apt.status !== "cancelled"
+      );
+  
       if (!isBooked) {
-        slots.push(timeString)
+        slots.push(timeString);
       }
-
-      currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000) // 30-minute slots
+  
+      // Move to next 30-minute slot
+      currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
     }
-
-    return slots
-  }
+  
+    return slots;
+  };
 
   const handleStatusChange = (appointmentId: string, newStatus: Appointment["status"]) => {
     updateAppointmentStatus(appointmentId, newStatus)
