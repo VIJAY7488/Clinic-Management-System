@@ -33,7 +33,7 @@ export function Dashboard() {
       });
 
       if (response.ok) {
-        window.location.href = '/login';
+        window.location.href = '/';
       } else {
         console.error('Logout failed');
       }
