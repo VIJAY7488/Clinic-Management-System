@@ -342,14 +342,18 @@ export function DoctorManagement() {
   );
 }
 
-interface DoctorFormProps {
-  doctor?: Doctor;
-  onSubmit: (doctor: Doctor) =>
-    | void
-    | Promise<void> // when editing
-    | ((doctor: Omit<Doctor, "_id">) => void | Promise<void>); // when adding
-  onCancel: () => void;
-}
+type DoctorFormProps =
+  | {
+      doctor: Doctor
+      onSubmit: (doctor: Doctor) => void | Promise<void>
+      onCancel: () => void
+    }
+  | {
+      doctor?: undefined
+      onSubmit: (doctor: Omit<Doctor, "_id">) => void | Promise<void>
+      onCancel: () => void
+    }
+
 
 // Form component for adding/editing a doctor
 function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
@@ -406,7 +410,7 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
         endTime: slot.endTime,
       }));
 
-    const submitData = {
+    const submitData: Omit<Doctor, "_id"> = {
       ...formData,
       availability,
     };
@@ -414,7 +418,7 @@ function DoctorForm({ doctor, onSubmit, onCancel }: DoctorFormProps) {
     if (doctor) {
       onSubmit({ ...submitData, _id: doctor._id });
     } else {
-      onSubmit(submitData);
+      onSubmit(submitData as Omit<Doctor, "_id">)
     }
   };
 
