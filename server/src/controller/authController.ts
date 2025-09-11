@@ -52,3 +52,22 @@ export const loginStaff = wrapAsyncFunction(async(req: Request, res: Response) =
         },
     });
 });
+
+
+export const logoutStaff = wrapAsyncFunction(async (req: Request, res: Response) => {
+  logger.info("Logout endpoint hit");
+
+  // Clear the cookie
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  logger.info("Logout successful");
+
+  res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
+});
