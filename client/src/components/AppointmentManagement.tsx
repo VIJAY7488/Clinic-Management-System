@@ -639,7 +639,7 @@ function AppointmentForm({ appointment, doctors, onSubmit, onCancel, generateTim
               <SelectContent>
                 {doctors.map((doctor) => (
                   <SelectItem key={doctor._id} value={doctor._id}>
-                    {doctor.name} - {doctor.specialty}
+                    {doctor.name} - {doctor.specialization}
                   </SelectItem>
                 ))}
               </SelectContent>
