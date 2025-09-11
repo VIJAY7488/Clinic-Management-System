@@ -10,10 +10,10 @@ import { authenticate } from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.post("/", authenticate, createDoctor);
-router.get("/", authenticate, getDoctors);
-router.get("/:id", authenticate, getDoctorById);
-router.put("/:id", authenticate, updateDoctor);
-router.delete("/:id", authenticate, deleteDoctor);
+router.post("/", createDoctor);
+router.get("/",  getDoctors);
+router.get("/:id", getDoctorById);
+router.put("/:id", updateDoctor);
+router.delete("/:id", deleteDoctor);
 
 export default router;

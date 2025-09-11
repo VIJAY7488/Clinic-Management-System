@@ -16,7 +16,7 @@ export interface DoctorProps {
   location: string;
   availability: Availability[];
   notes?: string;
-  isActive: boolean;
+  status: boolean;
 }
 
 const AvailabilitySchema = new Schema<Availability>(
@@ -82,7 +82,7 @@ const doctorSchema = new Schema<DoctorProps>(
       type: String,
       trim: true,
     },
-    isActive: {
+    status: {
       type: Boolean,
       default: true,
     },

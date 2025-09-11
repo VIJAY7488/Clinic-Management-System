@@ -6,6 +6,8 @@ import configureCors from './config/corsConfig';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes';
 import doctorRoutes from './routes/doctorRoutes';
+import patientRoutes from './routes/patientRoutes';
+import appointmentRoutes from './routes/appointmentsRoutes';
 
 
 const app = express();
@@ -23,6 +25,8 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 
 

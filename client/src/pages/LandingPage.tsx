@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Clock, Users, Calendar, Stethoscope, Shield, Star, ArrowRight, Menu, X } from "lucide-react"
+import { CheckCircle, Clock, Users, Calendar, Stethoscope, Menu, X } from "lucide-react"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -15,12 +16,19 @@ export function LandingPage() {
       <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+            <Link to="/">
+                <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Stethoscope className="w-5 h-5 text-primary-foreground" />
+              <div className="p-2 bg-primary rounded-lg">
+                <Stethoscope className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">ClinicDesk</span>
+              <div>
+                <h1 className="text-xl font-bold text-primary">Clinic Front Desk</h1>
+                <p className="text-xs text-muted-foreground">Patient Management System</p>
+              </div>
             </div>
+          </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
@@ -32,10 +40,11 @@ export function LandingPage() {
               </a>
 
               <div className="hidden md:flex items-center space-x-4">
-                <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                    Sign In
-                </Button>
-                <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">Get Started</Button>
+                <Link to="/login">
+                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                        Sign In
+                    </Button>
+                </Link>
               </div>
             </nav>
 
@@ -313,8 +322,6 @@ export function LandingPage() {
                 Professional front desk management system designed specifically for healthcare providers.
               </p>
             </div>
-            
-            
             
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
