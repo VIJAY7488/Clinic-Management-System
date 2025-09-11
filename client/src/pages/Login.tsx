@@ -11,8 +11,8 @@ const LoginPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // Replace this URL with your actual API endpoint
-  const API_ENDPOINT = 'http://localhost:3000/api/auth/login';
+  
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch(API_ENDPOINT, {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

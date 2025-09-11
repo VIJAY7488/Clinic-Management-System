@@ -20,9 +20,29 @@ import { DoctorManagement } from "../components/DoctorManagement"
 import { QueueManagement } from "../components/QueueManagement"
 import { AppointmentManagement } from "../components/AppointmentManagement"
 
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export function Dashboard() {
   // const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState("overview");
+
+  const logout = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}auth/logout`, {
+        method: 'POST',
+        credentials: 'include', 
+      });
+
+      if (response.ok) {
+        window.location.href = '/login';
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('An error occurred during logout:', error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,28 +62,13 @@ export function Dashboard() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-xs flex items-center justify-center text-destructive-foreground">
-                3
-              </span>
-            </Button>
-
-            <Button variant="ghost" size="sm">
-              <Settings className="h-4 w-4" />
-            </Button>
 
             <div className="h-6 w-px bg-border" />
 
-            <div className="text-right">
-              <p className="text-sm font-medium">Vijay</p>
-              <p className="text-xs text-muted-foreground capitalize">Admin</p>
-            </div>
-
-            {/* <Button variant="outline" size="sm" onClick={logout}>
+            <Button variant="outline" size="sm" onClick={logout}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
-            </Button> */}
+            </Button>
           </div>
         </div>
       </header>
