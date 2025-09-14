@@ -3,10 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAppointmentStatus = exports.deleteAppointment = exports.updateAppointment = exports.createAppointment = exports.getAppointmentById = exports.getAppointments = void 0;
+exports.updateAppointmentStatus = exports.deleteAppointment = exports.updateAppointment = exports.getAppointmentById = exports.getAppointments = exports.createAppointment = void 0;
 const appointmentModel_1 = __importDefault(require("../models/appointmentModel"));
 const tryCatchWrapper_1 = __importDefault(require("../utils/tryCatchWrapper"));
 const logger_1 = __importDefault(require("../utils/logger"));
+const doctorModel_1 = __importDefault(require("../models/doctorModel"));
+// create new appointment
+exports.createAppointment = (0, tryCatchWrapper_1.default)(async (req, res) => {
+    logger_1.default.info("Creating new appointment", { body: req.body });
+    const appointment = new appointmentModel_1.default(req.body);
+    const savedAppointment = await appointment.save();
+    await doctorModel_1.default.findByIdAndUpdate(req.body.doctor, { $inc: { currentPatients: 1 } }, { new: true });
+    res.status(201).json({ success: true, savedAppointment });
+});
 // Get all appointments
 exports.getAppointments = (0, tryCatchWrapper_1.default)(async (req, res) => {
     logger_1.default.info("Fetching all appointments");
@@ -22,13 +31,6 @@ exports.getAppointmentById = (0, tryCatchWrapper_1.default)(async (req, res) => 
         return res.status(404).json({ message: "Appointment not found" });
     }
     res.status(200).json({ success: true, appointment });
-});
-// create new appointment
-exports.createAppointment = (0, tryCatchWrapper_1.default)(async (req, res) => {
-    logger_1.default.info("Creating new appointment", { body: req.body });
-    const appointment = new appointmentModel_1.default(req.body);
-    const savedAppointment = await appointment.save();
-    res.status(201).json({ success: true, savedAppointment });
 });
 // update appointment
 exports.updateAppointment = (0, tryCatchWrapper_1.default)(async (req, res) => {
@@ -63,7 +65,24 @@ exports.updateAppointmentStatus = (0, tryCatchWrapper_1.default)(async (req, res
         logger_1.default.warn(`Appointment not found with id ${req.params.id}`);
         return res.status(404).json({ message: "Appointment not found" });
     }
+    // Store old status to detect changes
+    const oldStatus = appointment.status;
+    // Update new status
     appointment.status = status || appointment.status;
     const updated = await appointment.save();
-    res.status(200).json(updated);
+    logger_1.default.info(appointment.doctor._id);
+    logger_1.default.info(appointment.doctor);
+    // If appointment got cancelled and wasn't cancelled before
+    if (status === "cancelled" && oldStatus !== "cancelled") {
+        await doctorModel_1.default.findByIdAndUpdate(appointment.doctor, [
+            {
+                $set: {
+                    currentPatients: {
+                        $max: [{ $add: ["$currentPatients", -1] }, 0],
+                    },
+                },
+            },
+        ]);
+    }
+    res.status(200).json({ success: true, appointment: updated });
 });
