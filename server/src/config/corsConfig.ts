@@ -11,7 +11,7 @@ const configureCors = () => {
         callback(new Error("CORS: Origin not allowed"));
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept-Version"],
     credentials: true,
     maxAge: 10*60*60*1000, // 10min

@@ -1,16 +1,16 @@
-import mongoose, { Schema, Document, Types } from "mongoose"
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IPatient extends Document {
-  name: string
-  phone: string
-  reason: string
-  priority: "normal" | "urgent" | "emergency"
-  status: "waiting" | "with-doctor" | "completed" | "cancelled"
-  notes?: string
-  doctor?: Types.ObjectId // reference to Doctor collection
-  waitingTime?: number    // in minutes
-  createdAt: Date
-  updatedAt: Date
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  age?: string;
+  phone: string;
+  doctor: mongoose.Types.ObjectId;
+  queueNumber: number;
+  queueStatus: "waiting" | "with-doctor" | "completed" | "skipped";
+  appointmentId: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const PatientSchema: Schema = new Schema(
@@ -20,38 +20,37 @@ const PatientSchema: Schema = new Schema(
       required: true,
       trim: true,
     },
+    age: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     phone: {
       type: String,
       trim: true,
-    },
-    reason: {
-      type: String,
-      trim: true,
-    },
-    priority: {
-      type: String,
-      enum: ["normal", "urgent", "emergency"],
-      default: "normal",
-    },
-    status: {
-      type: String,
-      enum: ["waiting", "with-doctor", "completed", "cancelled"],
-      default: "waiting",
-    },
-    notes: {
-      type: String,
-      trim: true,
+      required: true,
     },
     doctor: {
-      type: Schema.Types.ObjectId,
-      ref: "Doctor", // assumes you have a Doctor model
+      type: Schema.Types.ObjectId,   
+      ref: "Doctor",
+      required: true,
     },
-    waitingTime: {
-      type: Number, // in minutes
-      default: 0,
+    queueNumber: {
+      type: Number,
+      required: true,
+    },
+    queueStatus: {
+      type: String,
+      enum: ["waiting", "with-doctor", "completed", "skipped"],
+      default: "waiting",
+    },
+    appointmentId: {
+      type: Schema.Types.ObjectId,   
+      ref: "Appointment",
+      required: true,
     },
   },
   { timestamps: true }
-)
+);
 
-export default mongoose.model<IPatient>("Patient", PatientSchema)
+export default mongoose.model<IPatient>("Patient", PatientSchema);

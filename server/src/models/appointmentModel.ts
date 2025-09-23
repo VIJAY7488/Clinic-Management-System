@@ -1,35 +1,30 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface AppointmentDoc extends Document {
-  doctor: Types.ObjectId;       
-  patient: string; 
-  phone: string;
+  _id: mongoose.Types.ObjectId;
+  doctor: mongoose.Types.ObjectId;
+  patient: mongoose.Types.ObjectId;
   reason: string;
-  notes?: string;     
+  notes?: string;
   date: Date;
   time: string;
-  duration: number;
-  status: "booked" | "completed" | "cancelled"; 
+  appStatus: "booked" | "completed" | "cancelled";
 }
 
 const appointmentSchema = new Schema<AppointmentDoc>(
   {
     doctor: {
-      type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId, 
       ref: "Doctor",
       required: true,
     },
     patient: {
-      type: Schema.Types.String,
-      required: true,
-    },
-    phone: {
-        type: String,
-        trim: true,
+      type: Schema.Types.ObjectId, 
+      ref: "Patient",
     },
     reason: {
-        type: String,
-        trim: true,
+      type: String,
+      trim: true,
     },
     notes: {
       type: String,
@@ -38,23 +33,23 @@ const appointmentSchema = new Schema<AppointmentDoc>(
     time: {
       type: String,
     },
-    duration: {
-      type: Number, // in minutes
-      default: 30,      
-    },
     date: {
       type: Date,
       required: true,
     },
-    status: {
+    appStatus: {
       type: String,
       enum: ["booked", "completed", "cancelled"],
       default: "booked",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-const Appointment = mongoose.model<AppointmentDoc>("Appointment", appointmentSchema);
+const Appointment = mongoose.model<AppointmentDoc>(
+  "Appointment",
+  appointmentSchema
+);
 
 export default Appointment;
