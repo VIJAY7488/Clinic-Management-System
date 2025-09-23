@@ -41,12 +41,8 @@ const appointmentSchema = new mongoose_1.Schema({
         required: true,
     },
     patient: {
-        type: mongoose_1.Schema.Types.String,
-        required: true,
-    },
-    phone: {
-        type: String,
-        trim: true,
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Patient",
     },
     reason: {
         type: String,
@@ -59,18 +55,15 @@ const appointmentSchema = new mongoose_1.Schema({
     time: {
         type: String,
     },
-    duration: {
-        type: Number, // in minutes
-        default: 30,
-    },
     date: {
         type: Date,
         required: true,
     },
-    status: {
+    appStatus: {
         type: String,
         enum: ["booked", "completed", "cancelled"],
         default: "booked",
+        required: true,
     },
 }, { timestamps: true });
 const Appointment = mongoose_1.default.model("Appointment", appointmentSchema);

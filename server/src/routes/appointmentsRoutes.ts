@@ -1,17 +1,17 @@
 import { Router } from "express";
 import {
-  getAppointments,
   getAppointmentById,
   createAppointment,
   updateAppointment,
   deleteAppointment,
   updateAppointmentStatus,
+  getAllAppointments,
 } from "../controller/appointmentController";
 
 const router = Router();
 
 // GET all appointments
-router.get("/", getAppointments);
+router.get("/", getAllAppointments);
 
 // GET single appointment by ID
 router.get("/:id", getAppointmentById);

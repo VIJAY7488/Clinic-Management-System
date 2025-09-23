@@ -84,6 +84,5 @@ exports.updateWaitingTime = (0, tryCatchWrapper_1.default)(async (req, res) => {
         logger_1.default.warn("Patient not found for waiting time update", { id: req.params.id });
         return res.status(404).json({ error: "Patient not found" });
     }
-    logger_1.default.info("Waiting time updated", { id: patient._id, waitingTime: patient.waitingTime });
     res.json(patient);
 });

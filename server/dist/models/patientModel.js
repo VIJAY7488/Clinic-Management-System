@@ -40,35 +40,34 @@ const PatientSchema = new mongoose_1.Schema({
         required: true,
         trim: true,
     },
+    age: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     phone: {
         type: String,
         trim: true,
-    },
-    reason: {
-        type: String,
-        trim: true,
-    },
-    priority: {
-        type: String,
-        enum: ["normal", "urgent", "emergency"],
-        default: "normal",
-    },
-    status: {
-        type: String,
-        enum: ["waiting", "with-doctor", "completed", "cancelled"],
-        default: "waiting",
-    },
-    notes: {
-        type: String,
-        trim: true,
+        required: true,
     },
     doctor: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: "Doctor", // assumes you have a Doctor model
+        ref: "Doctor",
+        required: true,
     },
-    waitingTime: {
-        type: Number, // in minutes
-        default: 0,
+    queueNumber: {
+        type: Number,
+        required: true,
+    },
+    queueStatus: {
+        type: String,
+        enum: ["waiting", "with-doctor", "completed", "skipped"],
+        default: "waiting",
+    },
+    appointmentId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Appointment",
+        required: true,
     },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("Patient", PatientSchema);
